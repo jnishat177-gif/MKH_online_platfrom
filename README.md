@@ -75,3 +75,4 @@ marketinghub-online-platform/
 │   ├── data/mockData.ts         # Grocery, Cosmetics, Furniture, Electronics, Ladies Dress & Schemas
 │   ├── context/AppContext.tsx   # Global State (Cart, bKash/Nagad, Orders, Roles)
 │   └── components/              # Storefront, Dashboards, PaymentModal & ProjectHub
+```
