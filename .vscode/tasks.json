@@ -1,0 +1,38 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Install Packages",
+      "type": "shell",
+      "command": "npm install --legacy-peer-deps",
+      "problemMatcher": []
+    },
+    {
+      "label": "Start MarketingHub (localhost:3000)",
+      "type": "shell",
+      "command": "node -e \"const fs=require('fs'),cp=require('child_process');if(!fs.existsSync('node_modules'))cp.execSync('npm install --legacy-peer-deps',{stdio:'inherit'});cp.execSync('npm run dev',{stdio:'inherit'})\"",
+      "isBackground": true,
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [
+        {
+          "pattern": [
+            {
+              "regexp": ".",
+              "file": 1,
+              "location": 2,
+              "message": 3
+            }
+          ],
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "VITE|vite",
+            "endsPattern": "http://localhost:3000|Local:"
+          }
+        }
+      ]
+    }
+  ]
+}

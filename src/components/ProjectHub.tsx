@@ -1,31 +1,65 @@
 import React, { useState } from 'react';
+import { useApp } from '../context/AppContext';
 import { 
   DATABASE_TABLES_SCHEMA, 
   ROADMAP_PHASES, 
   VIVA_QUESTIONS 
 } from '../data/mockData';
+import { downloadReportDocx, downloadReportPdf } from '../utils/reportExporter';
+import { downloadPresentationPptx, PRESENTATION_SLIDES } from '../utils/pptxExporter';
+import { DEFAULT_THESIS_METADATA } from '../data/thesisContent';
 import { 
   BookMarked, 
   Database, 
   GitBranch, 
-  Server, 
+  Server,
   FileText, 
   HelpCircle, 
   CheckCircle2, 
   Code, 
   Play, 
-  Layers, 
   Cpu, 
-  ShieldCheck, 
-  Globe, 
-  Workflow,
-  Download 
+  ShieldCheck,
+  Globe,
+  Download,
+  GraduationCap,
+  FileDown,
+  Presentation
 } from 'lucide-react';
 
 export const ProjectHub: React.FC = () => {
+  const { setRole } = useApp();
   const [activeTab, setActiveTab] = useState<'architecture' | 'database' | 'roadmap' | 'api' | 'report_viva'>('architecture');
   const [selectedTable, setSelectedTable] = useState(DATABASE_TABLES_SCHEMA[0].tableName);
   const [searchTable, setSearchTable] = useState('');
+  const [exportingFormat, setExportingFormat] = useState<'docx' | 'pdf' | 'pptx' | null>(null);
+
+  const handleDownloadWord = async () => {
+    setExportingFormat('docx');
+    try {
+      await downloadReportDocx(DEFAULT_THESIS_METADATA);
+    } finally {
+      setExportingFormat(null);
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    setExportingFormat('pdf');
+    try {
+      await downloadReportPdf(DEFAULT_THESIS_METADATA);
+    } finally {
+      setExportingFormat(null);
+    }
+  };
+
+  const handleDownloadPptx = async () => {
+    setExportingFormat('pptx');
+    try {
+      await downloadPresentationPptx(DEFAULT_THESIS_METADATA);
+    } finally {
+      setExportingFormat(null);
+    }
+  };
 
   // API testing simulator state
   const [apiEndpoint, setApiEndpoint] = useState('/api/v1/products/');
@@ -97,8 +131,8 @@ export const ProjectHub: React.FC = () => {
               Complete engineering roadmap, 20-table relational database architecture, Django Channels real-time WebSockets, bKash & Nagad payment verification, and defense viva questions.
             </p>
 
-            {/* Quick ZIP Download Button */}
-            <div className="pt-2 flex flex-wrap items-center gap-3">
+            {/* Quick ZIP Download & Standalone Word/PDF Thesis Report Buttons */}
+            <div className="pt-2 flex flex-wrap items-center gap-2.5">
               <button
                 onClick={() => {
                   const link = document.createElement('a');
@@ -108,14 +142,46 @@ export const ProjectHub: React.FC = () => {
                   link.click();
                   document.body.removeChild(link);
                 }}
-                className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl transition-all cursor-pointer flex items-center gap-2 shadow-md"
+                className="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shadow-md"
               >
                 <Download className="w-4 h-4" />
-                <span>Download Full Project ZIP (VS Code & GitHub Ready)</span>
+                <span>Download Code ZIP</span>
               </button>
-              <span className="text-[11px] text-slate-400">
-                Includes GitHub Pages Workflow, README & Run Guide
-              </span>
+
+              <button
+                onClick={handleDownloadWord}
+                disabled={exportingFormat !== null}
+                className="px-3.5 py-2 bg-indigo-500 hover:bg-indigo-400 text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shadow-md disabled:opacity-60"
+              >
+                <FileDown className="w-4 h-4" />
+                <span>{exportingFormat === 'docx' ? 'Generating Word...' : 'Download Report (.docx)'}</span>
+              </button>
+
+              <button
+                onClick={handleDownloadPdf}
+                disabled={exportingFormat !== null}
+                className="px-3.5 py-2 bg-rose-500 hover:bg-rose-400 text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shadow-md disabled:opacity-60"
+              >
+                <FileDown className="w-4 h-4" />
+                <span>{exportingFormat === 'pdf' ? 'Generating PDF...' : 'Download Report (.pdf)'}</span>
+              </button>
+
+              <button
+                onClick={handleDownloadPptx}
+                disabled={exportingFormat !== null}
+                className="px-3.5 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shadow-md disabled:opacity-60"
+              >
+                <Presentation className="w-4 h-4" />
+                <span>{exportingFormat === 'pptx' ? 'Generating Slides...' : 'Download PowerPoint (.pptx)'}</span>
+              </button>
+
+              <button
+                onClick={() => setRole('thesis_report')}
+                className="px-3.5 py-2 bg-white/15 hover:bg-white/25 text-white border border-white/20 font-extrabold text-xs rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shadow-md"
+              >
+                <GraduationCap className="w-4 h-4 text-amber-300" />
+                <span>Edit Certificate &amp; Preview</span>
+              </button>
             </div>
           </div>
 
@@ -521,11 +587,43 @@ export const ProjectHub: React.FC = () => {
         <div className="space-y-6 text-xs">
           {/* Report Structure */}
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
-            <div className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-indigo-700" />
-              <h3 className="font-bold text-slate-900 uppercase tracking-wider">
-                CSE Final Year Project Report (50–60 Pages Outline)
-              </h3>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-indigo-700" />
+                  <h3 className="font-bold text-slate-900 uppercase tracking-wider">
+                    CSE Final Year Project Report (50–60 Pages · 12 Chapters)
+                  </h3>
+                </div>
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Separate from code ZIP · Includes Student Academic Certificate, 7 Architecture/UML Diagrams &amp; 22-Table DB Schema (no product images or trailing source pages).
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={handleDownloadWord}
+                  disabled={exportingFormat !== null}
+                  className="px-3.5 py-2 bg-indigo-700 hover:bg-indigo-800 text-white font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1.5 disabled:opacity-60"
+                >
+                  <FileDown className="w-4 h-4" />
+                  <span>{exportingFormat === 'docx' ? 'Generating...' : 'Download Word (.docx)'}</span>
+                </button>
+                <button
+                  onClick={handleDownloadPdf}
+                  disabled={exportingFormat !== null}
+                  className="px-3.5 py-2 bg-rose-700 hover:bg-rose-800 text-white font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1.5 disabled:opacity-60"
+                >
+                  <FileDown className="w-4 h-4" />
+                  <span>{exportingFormat === 'pdf' ? 'Generating...' : 'Download PDF (.pdf)'}</span>
+                </button>
+                <button
+                  onClick={() => setRole('thesis_report')}
+                  className="px-3.5 py-2 bg-emerald-800 hover:bg-emerald-900 text-white font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1.5"
+                >
+                  <GraduationCap className="w-4 h-4" />
+                  <span>Edit Certificate &amp; Preview</span>
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -549,6 +647,43 @@ export const ProjectHub: React.FC = () => {
                     <span className="text-[10px] text-slate-500 font-mono">~{item.p} pages</span>
                   </div>
                   <p className="text-slate-700 font-medium">{item.title}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 10-Slide CSE Defense PowerPoint Presentation Card */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Presentation className="w-5 h-5 text-amber-600" />
+                  <h3 className="font-bold text-slate-900 uppercase tracking-wider">
+                    CSE Defense PowerPoint Presentation (10 Slides · .pptx)
+                  </h3>
+                </div>
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Native 16:9 PowerPoint deck ready for Microsoft PowerPoint &amp; Google Slides — includes speaker notes, comparative tables, benchmarks &amp; embedded Architecture/ER/Payment diagrams.
+                </p>
+              </div>
+              <button
+                onClick={handleDownloadPptx}
+                disabled={exportingFormat !== null}
+                className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold rounded-lg text-xs cursor-pointer flex items-center gap-1.5 shadow-xs disabled:opacity-60"
+              >
+                <Presentation className="w-4 h-4" />
+                <span>{exportingFormat === 'pptx' ? 'Generating Slides...' : 'Download PowerPoint (.pptx)'}</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+              {PRESENTATION_SLIDES.map(slide => (
+                <div key={slide.slideNumber} className="p-3 bg-amber-50/50 rounded-xl border border-amber-200/80 space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 font-mono">
+                    Slide {slide.slideNumber}
+                  </span>
+                  <p className="font-bold text-slate-900 text-xs leading-snug">{slide.title}</p>
+                  <p className="text-[10px] text-slate-600 leading-relaxed">{slide.keyHighlight}</p>
                 </div>
               ))}
             </div>

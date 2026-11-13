@@ -1,7 +1,7 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { UserRole } from '../types';
-import { ShoppingCart, Store, ShieldCheck, Truck, BookMarked, Store as StoreIcon } from 'lucide-react';
+import { ShoppingCart, Store, ShieldCheck, Truck, BookMarked, GraduationCap, Store as StoreIcon } from 'lucide-react';
 
 export const RoleSwitcher: React.FC = () => {
   const { role, setRole, activeStoreId, setActiveStoreId, sellers } = useApp();
@@ -36,6 +36,12 @@ export const RoleSwitcher: React.FC = () => {
       label: 'CSE Defense Hub',
       icon: <BookMarked className="w-3.5 h-3.5" />,
       desc: 'System Architecture, 20-Table ER, Roadmap & Viva'
+    },
+    {
+      id: 'thesis_report',
+      label: 'Thesis Report (PDF)',
+      icon: <GraduationCap className="w-3.5 h-3.5" />,
+      desc: '50-60 Page 12-Chapter Report, Vector Diagrams & Student Certificate'
     }
   ];
 
@@ -95,7 +101,11 @@ export const RoleSwitcher: React.FC = () => {
             </div>
           ) : role === 'cse_hub' ? (
             <div className="text-[11px] text-indigo-700 font-semibold bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded">
-              CSE Final Year Project Blueprint & Viva Review Mode
+              CSE Final Year Project Blueprint &amp; Viva Review Mode
+            </div>
+          ) : role === 'thesis_report' ? (
+            <div className="text-[11px] text-emerald-800 font-semibold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+              12-Chapter A4 Thesis Report &amp; Academic Certificate
             </div>
           ) : (
             <div className="text-[11px] text-slate-500 hidden sm:flex items-center gap-2">

@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { downloadProjectZip } from '../utils/zipDownloader';
+import { downloadReportDocx, downloadReportPdf } from '../utils/reportExporter';
+import { downloadPresentationPptx } from '../utils/pptxExporter';
+import { DEFAULT_THESIS_METADATA } from '../data/thesisContent';
 import { 
   Download, 
   X, 
@@ -9,7 +12,10 @@ import {
   GitBranch,
   Sparkles,
   Info,
-  Globe
+  Globe,
+  FileText,
+  FileDown,
+  Presentation
 } from 'lucide-react';
 
 interface DownloadProjectModalProps {
@@ -22,6 +28,8 @@ export const DownloadProjectModal: React.FC<DownloadProjectModalProps> = ({ isOp
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [downloadStarted, setDownloadStarted] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [exportingType, setExportingType] = useState<'docx' | 'pdf' | 'pptx' | null>(null);
+  const [exportedType, setExportedType] = useState<'docx' | 'pdf' | 'pptx' | null>(null);
 
   if (!isOpen) return null;
 
@@ -31,6 +39,39 @@ export const DownloadProjectModal: React.FC<DownloadProjectModalProps> = ({ isOp
     setIsDownloading(false);
     setDownloadStarted(true);
     setTimeout(() => setDownloadStarted(false), 4000);
+  };
+
+  const handleDownloadDocx = async () => {
+    setExportingType('docx');
+    try {
+      await downloadReportDocx(DEFAULT_THESIS_METADATA);
+      setExportedType('docx');
+      setTimeout(() => setExportedType(null), 4000);
+    } finally {
+      setExportingType(null);
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    setExportingType('pdf');
+    try {
+      await downloadReportPdf(DEFAULT_THESIS_METADATA);
+      setExportedType('pdf');
+      setTimeout(() => setExportedType(null), 4000);
+    } finally {
+      setExportingType(null);
+    }
+  };
+
+  const handleDownloadPptx = async () => {
+    setExportingType('pptx');
+    try {
+      await downloadPresentationPptx(DEFAULT_THESIS_METADATA);
+      setExportedType('pptx');
+      setTimeout(() => setExportedType(null), 4000);
+    } finally {
+      setExportingType(null);
+    }
   };
 
   const copyToClipboard = (text: string, key: string) => {
@@ -57,10 +98,10 @@ git push -u origin main`;
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-900">
-                Download Project ZIP, Run in VS Code & Publish on GitHub
+                Download Project ZIP, Thesis Reports &amp; PowerPoint Slides
               </h3>
               <p className="text-[11px] text-slate-500">
-                MarketingHub Online Platform · সম্পূর্ণ সোর্স কোড ও ডিপ্লয়মেন্ট গাইড
+                MarketingHub Online Platform · সোর্স কোড ZIP, Word/PDF রিপোর্ট ও ১০ স্লাইডের PPT
               </p>
             </div>
           </div>
@@ -73,17 +114,17 @@ git push -u origin main`;
         </div>
 
         <div className="p-6 space-y-5 max-h-[82vh] overflow-y-auto text-xs">
-          {/* Main Download Action Banner */}
+          {/* 1. Project Source Code ZIP Action Banner */}
           <div className="p-5 bg-gradient-to-br from-emerald-900 via-slate-900 to-slate-950 text-white rounded-xl shadow-sm space-y-3.5">
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5" /> Full Source Code Archive Ready
+                <Sparkles className="w-3.5 h-3.5" /> 1. Project Source Code Only (Separate from Report)
               </span>
               <h4 className="text-base font-extrabold text-white mt-0.5">
                 marketinghub-project.zip
               </h4>
               <p className="text-slate-300 text-xs mt-1">
-                Includes Grocery, Cosmetics, Furniture, Electronics, Ladies Dress One-Piece, bKash & Nagad simulators, 4 Role Dashboards, and auto-deploy GitHub Actions workflow.
+                Includes full React + Vite storefront (Grocery, Cosmetics, Furniture, Electronics, Ladies Dress), bKash &amp; Nagad simulators, 4 Role Dashboards, and GitHub Actions workflow.
               </p>
             </div>
 
@@ -109,6 +150,92 @@ git push -u origin main`;
                 </>
               )}
             </button>
+          </div>
+
+          {/* 2. Standalone Thesis Report & PowerPoint Slides */}
+          <div className="p-4 bg-indigo-50/80 border border-indigo-200 rounded-xl space-y-3">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-800 flex items-center gap-1">
+                <FileText className="w-3.5 h-3.5" /> 2. Standalone Report (Word/PDF) &amp; PowerPoint Slides (.pptx)
+              </span>
+              <h4 className="text-sm font-extrabold text-slate-900 mt-0.5">
+                12-Chapter Report + 10-Slide CSE Defense PowerPoint
+              </h4>
+              <p className="text-[11px] text-slate-600 mt-0.5">
+                প্রজেক্ট ZIP থেকে সম্পূর্ণ আলাদা। এখান থেকেই সরাসরি Word (.docx), PDF (.pdf) অথবা Microsoft PowerPoint (.pptx) প্রেজেন্টেশন স্লাইড ডাউনলোড করুন।
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <button
+                onClick={handleDownloadDocx}
+                disabled={exportingType !== null}
+                className="py-2.5 px-3 bg-indigo-700 hover:bg-indigo-800 text-white font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs disabled:opacity-60"
+              >
+                {exportingType === 'docx' ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Word...</span>
+                  </>
+                ) : exportedType === 'docx' ? (
+                  <>
+                    <Check className="w-4 h-4 text-emerald-300" />
+                    <span>Word Ready</span>
+                  </>
+                ) : (
+                  <>
+                    <FileDown className="w-4 h-4" />
+                    <span>Word (.docx)</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                onClick={handleDownloadPdf}
+                disabled={exportingType !== null}
+                className="py-2.5 px-3 bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs disabled:opacity-60"
+              >
+                {exportingType === 'pdf' ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>PDF...</span>
+                  </>
+                ) : exportedType === 'pdf' ? (
+                  <>
+                    <Check className="w-4 h-4 text-emerald-300" />
+                    <span>PDF Ready</span>
+                  </>
+                ) : (
+                  <>
+                    <FileDown className="w-4 h-4" />
+                    <span>PDF (.pdf)</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                onClick={handleDownloadPptx}
+                disabled={exportingType !== null}
+                className="py-2.5 px-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs disabled:opacity-60"
+              >
+                {exportingType === 'pptx' ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                    <span>Slides...</span>
+                  </>
+                ) : exportedType === 'pptx' ? (
+                  <>
+                    <Check className="w-4 h-4 text-emerald-900" />
+                    <span>PPTX Ready</span>
+                  </>
+                ) : (
+                  <>
+                    <Presentation className="w-4 h-4" />
+                    <span>PPTX (10 Slides)</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Guide Tab Switcher */}

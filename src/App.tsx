@@ -13,11 +13,12 @@ import { SellerDashboard } from './components/SellerDashboard';
 import { AdminDashboard } from './components/AdminDashboard';
 import { DeliveryDashboard } from './components/DeliveryDashboard';
 import { ProjectHub } from './components/ProjectHub';
+import { ThesisReportView } from './components/ThesisReportView';
 import { CartDrawer } from './components/CartDrawer';
 import { PaymentModal } from './components/PaymentModal';
 import { OrderTrackingModal } from './components/OrderTrackingModal';
 import { DownloadProjectModal } from './components/DownloadProjectModal';
-import { ShieldCheck, Download } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 
 const MainLayout: React.FC = () => {
   const { role, setRole } = useApp();
@@ -26,18 +27,20 @@ const MainLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col text-slate-900 selection:bg-emerald-100 selection:text-emerald-900">
-      {/* 1. Real-Time Marketing Flash Sale Banner Ticker */}
-      <MarketingBanner />
+      <div className="no-print">
+        {/* 1. Real-Time Marketing Flash Sale Banner Ticker */}
+        <MarketingBanner />
 
-      {/* 2. Top Bar Navigation Contract */}
-      <Header 
-        searchQuery={searchQuery} 
-        setSearchQuery={setSearchQuery} 
-        onOpenDownloadModal={() => setIsDownloadModalOpen(true)}
-      />
+        {/* 2. Top Bar Navigation Contract */}
+        <Header 
+          searchQuery={searchQuery} 
+          setSearchQuery={setSearchQuery} 
+          onOpenDownloadModal={() => setIsDownloadModalOpen(true)}
+        />
 
-      {/* 3. Multi-Role Switcher Bar */}
-      <RoleSwitcher />
+        {/* 3. Multi-Role Switcher Bar */}
+        <RoleSwitcher />
+      </div>
 
       {/* 4. Active Role View */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 pt-6">
@@ -46,6 +49,7 @@ const MainLayout: React.FC = () => {
         {role === 'admin' && <AdminDashboard />}
         {role === 'delivery' && <DeliveryDashboard />}
         {role === 'cse_hub' && <ProjectHub />}
+        {role === 'thesis_report' && <ThesisReportView />}
       </main>
 
       {/* 5. Drawers and Modals */}
@@ -58,7 +62,7 @@ const MainLayout: React.FC = () => {
       />
 
       {/* 6. Professional Footer */}
-      <footer className="bg-white border-t border-slate-200 mt-auto text-xs text-slate-500">
+      <footer className="no-print bg-white border-t border-slate-200 mt-auto text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div className="space-y-2">

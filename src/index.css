@@ -12,6 +12,10 @@
   }
 }
 
+.font-thesis {
+  font-family: 'Lora', Georgia, 'Times New Roman', serif;
+}
+
 /* Custom scrollbar for clean UI */
 ::-webkit-scrollbar {
   width: 6px;
@@ -26,4 +30,47 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* A4 Print & PDF Export Rules */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 18mm 18mm 20mm 18mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-page-break {
+    page-break-before: always;
+    break-before: page;
+  }
+
+  .avoid-break {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .thesis-paper {
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
 }
