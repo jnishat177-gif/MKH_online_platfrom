@@ -1,0 +1,6 @@
+{
+  "name": "DeshiBazaar - Real-Time Multi-Vendor E-Commerce Platform",
+  "description": "Multi-vendor Bangladeshi e-commerce platform with real-time marketing, bKash & Nagad payments, and 4 role dashboards (Admin, Seller, Customer, Delivery Manager) plus CSE project architecture hub.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
